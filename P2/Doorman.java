@@ -13,6 +13,7 @@ public class Doorman extends Thread{
 	 * @param gui		A reference to the GUI interface.
 	 */
     private Gui gui;
+    private boolean running;
     private CustomerQueue queue;
     public Doorman(CustomerQueue queue, Gui gui) {
         this.gui = gui;
@@ -22,7 +23,8 @@ public class Doorman extends Thread{
     @Override
     public void run() {
         super.run();
-        while(true){
+        running = true;
+        while(running){
             Customer customer = new Customer();
             gui.println("Doorman is waiting for free chairs...");
             queue.addToBuffer(customer);
@@ -51,6 +53,7 @@ public class Doorman extends Thread{
 	 */
 	public void stopThread() {
 		// Incomplete
+        running = false;
 	}
 
 	// Add more methods as needed

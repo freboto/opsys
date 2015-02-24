@@ -17,6 +17,7 @@ public class Barber extends Thread{
     private CustomerQueue queue;
     private Gui gui;
     private int pos;
+    private boolean running;
 
 	public Barber(CustomerQueue queue, Gui gui, int pos) {
         this.queue = queue;
@@ -26,10 +27,11 @@ public class Barber extends Thread{
 
     @Override
     public void run() {
+        running = true;
+        gui.barberIsSleeping(pos);
         super.run();
-        while(true) {
+        while(running) {
             Customer customer = queue.removeFromBuffer();
-
             gui.println("Barber #" + pos + " was notified of  a new customer");
             gui.fillBarberChair(pos, customer);
 
@@ -58,6 +60,7 @@ public class Barber extends Thread{
 	 */
 	public void stopThread() {
 		// Incomplete
+        running = false;
 	}
 
 	// Add more methods as needed
