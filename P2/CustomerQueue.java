@@ -45,11 +45,7 @@ public class CustomerQueue {
 
     public synchronized Customer removeFromBuffer() {
         Customer result = null;
-        try {
-            result = peek();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        result = peek();
 
         gui.emptyLoungeChair((head + (capacity() - unconsumedElements)) % capacity());
         unconsumedElements--;
@@ -60,10 +56,14 @@ public class CustomerQueue {
     }
 
 
-    public synchronized Customer peek() throws InterruptedException {
+    public synchronized Customer peek() {
         /* Wait for data to become available. */
         while (unconsumedElements == 0)
-            wait();
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
         return buffer[(head + (capacity() - unconsumedElements)) % capacity()];
     }

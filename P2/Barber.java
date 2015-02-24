@@ -35,13 +35,18 @@ public class Barber extends Thread{
             gui.println("Barber #" + pos + " was notified of  a new customer");
             gui.fillBarberChair(pos, customer);
 
-
             try {
                 gui.barberIsAwake(pos);
-                sleep(Globals.barberSleep);
-                gui.println("Barber #" + pos + " is waiting for customer");
+                sleep(Globals.barberWork);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
                 gui.emptyBarberChair(pos);
                 gui.barberIsSleeping(pos);
+                sleep(Globals.barberSleep);
+                gui.println("Barber #" + pos + " is waiting for customer");
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
