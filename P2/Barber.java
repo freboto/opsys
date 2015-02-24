@@ -26,10 +26,10 @@ public class Barber extends Thread{
 
     @Override
     public void run() {
+        gui.barberIsSleeping(pos);
         super.run();
         while(true) {
             Customer customer = queue.removeFromBuffer();
-
             gui.fillBarberChair(pos, customer);
             System.out.println("work");
 

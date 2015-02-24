@@ -1,7 +1,3 @@
-import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
-import java.util.Arrays;
-
 /**
  * This class implements a queue of customers as a circular buffer.
  */
@@ -12,7 +8,7 @@ public class CustomerQueue {
      * @param queueLength    The maximum length of the queue.
      * @param gui            A reference to the GUI interface.
      */
-    private int pointer;
+    private int head;
     private Gui gui;
     private int unconsumedElements;
 
@@ -21,7 +17,7 @@ public class CustomerQueue {
     public CustomerQueue(int queueLength, Gui gui) {
         buffer = new Customer[queueLength];
         this.gui = gui;
-        pointer = 0;
+        head = 0;
     }
 
 
@@ -34,9 +30,9 @@ public class CustomerQueue {
             }
         }
 
-        buffer[pointer] = customer;
-        gui.fillLoungeChair(pointer, customer);
-        pointer = (pointer + 1) % buffer.length;
+        buffer[head] = customer;
+        gui.fillLoungeChair(head, customer);
+        head = (head + 1) % buffer.length;
 
         ++unconsumedElements;
         notifyAll();
@@ -56,7 +52,7 @@ public class CustomerQueue {
         }
 
         --unconsumedElements;
-        gui.emptyLoungeChair(pointer);
+        gui.emptyLoungeChair(head);
         notifyAll();
 
         return result;
@@ -68,7 +64,7 @@ public class CustomerQueue {
         while (unconsumedElements == 0)
             wait();
 
-        return buffer[(pointer + (capacity() - unconsumedElements)) % capacity()];
+        return buffer[(head + (capacity() - unconsumedElements)) % capacity()];
     }
 
     public synchronized int size() {
