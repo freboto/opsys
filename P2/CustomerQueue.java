@@ -34,7 +34,7 @@ public class CustomerQueue {
         gui.fillLoungeChair(head, customer);
         head = (head + 1) % buffer.length;
 
-        ++unconsumedElements;
+        unconsumedElements++;
         notifyAll();
     }
 
@@ -51,8 +51,9 @@ public class CustomerQueue {
             e.printStackTrace();
         }
 
-        --unconsumedElements;
-        gui.emptyLoungeChair(head);
+        gui.emptyLoungeChair((head + (capacity() - unconsumedElements)) % capacity());
+        unconsumedElements--;
+
         notifyAll();
 
         return result;
