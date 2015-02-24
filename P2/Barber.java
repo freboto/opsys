@@ -30,12 +30,14 @@ public class Barber extends Thread{
         while(true) {
             Customer customer = queue.removeFromBuffer();
 
+            gui.println("Barber #" + pos + " was notified of  a new customer");
             gui.fillBarberChair(pos, customer);
-            System.out.println("work");
+
 
             try {
                 gui.barberIsAwake(pos);
                 sleep(Globals.barberSleep);
+                gui.println("Barber #" + pos + " is waiting for customer");
                 gui.emptyBarberChair(pos);
                 gui.barberIsSleeping(pos);
             } catch (InterruptedException e1) {

@@ -12,10 +12,10 @@ public class Doorman extends Thread{
 	 * @param queue		The customer queue.
 	 * @param gui		A reference to the GUI interface.
 	 */
-    //private Gui gui;
+    private Gui gui;
     private CustomerQueue queue;
     public Doorman(CustomerQueue queue, Gui gui) {
-        //this.gui = gui;
+        this.gui = gui;
         this.queue = queue;
 	}
 
@@ -24,7 +24,10 @@ public class Doorman extends Thread{
         super.run();
         while(true){
             Customer customer = new Customer();
+            gui.println("Doorman is waiting for free chairs...");
             queue.addToBuffer(customer);
+            gui.println("Doorman was notified of a free chair");
+
 
             try {
                 sleep(Globals.doormanSleep);
