@@ -24,6 +24,7 @@ public class CustomerQueue {
     public synchronized void addToBuffer(Customer customer) {
         while (unconsumedElements == buffer.length) {
             try {
+                gui.println("Doorman is waiting for free chairs...");
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -26,13 +26,14 @@ public class Doorman extends Thread{
         running = true;
         while(running){
             Customer customer = new Customer();
-            gui.println("Doorman is waiting for free chairs...");
             queue.addToBuffer(customer);
             gui.println("Doorman was notified of a free chair");
 
 
             try {
+                gui.println("Doorman is having a fap");
                 sleep(Globals.doormanSleep);
+
             }
 
             catch (InterruptedException e1) {
