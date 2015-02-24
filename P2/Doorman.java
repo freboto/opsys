@@ -12,6 +12,9 @@ public class Doorman extends Thread{
 	 * @param queue		The customer queue.
 	 * @param gui		A reference to the GUI interface.
 	 */
+
+    private boolean running;
+
     //private Gui gui;
     private CustomerQueue queue;
     public Doorman(CustomerQueue queue, Gui gui) {
@@ -22,7 +25,8 @@ public class Doorman extends Thread{
     @Override
     public void run() {
         super.run();
-        while(true){
+        running = true;
+        while(running){
             Customer customer = new Customer();
             queue.addToBuffer(customer);
 
@@ -48,6 +52,7 @@ public class Doorman extends Thread{
 	 */
 	public void stopThread() {
 		// Incomplete
+        running = false;
 	}
 
 	// Add more methods as needed
