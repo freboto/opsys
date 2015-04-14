@@ -43,7 +43,7 @@ public class Simulator implements Constants
 		statistics = new Statistics();
 		eventQueue = new EventQueue();
 		memory = new Memory(memoryQueue, memorySize, statistics);
-        cpu = new CPU(statistics, maxCpuTime);
+        cpu = new CPU(cpuQueue, statistics, maxCpuTime, gui);
 		clock = 0;
 		// Add code as needed
     }
@@ -137,6 +137,8 @@ public class Simulator implements Constants
 			// Also add new events to the event queue if needed
 
             cpu.insert(p);
+            if (cpu.isIdle()) switchProcess();
+            processEvent(eventQueue.getNextEvent());
 
 			// Since we haven't implemented the CPU and I/O device yet,
 			// we let the process leave the system immediately, for now.
@@ -155,14 +157,18 @@ public class Simulator implements Constants
 	 * Simulates a process switch.
 	 */
 	private void switchProcess() {
-		// Incomplete
-	}
+		Process p = cpu.doSwitch(clock);
+        generateEvent(p);
+        System.out.println(eventQueue.toString());
+    }
 
-	/**
+	/**20
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
-		// Incomplete
+        Process p = cpu.doEnd(clock);
+        memory.processCompleted(p);
+        switchProcess();
 	}
 
 	/**
@@ -170,7 +176,7 @@ public class Simulator implements Constants
 	 * perform an I/O operation.
 	 */
 	private void processIoRequest() {
-		// Incomplete
+
 	}
 
 	/**
@@ -180,6 +186,18 @@ public class Simulator implements Constants
 	private void endIoOperation() {
 		// Incomplete
 	}
+
+    public void generateEvent(Process p) {
+        if (p.getTimeToNextIoOperation() > cpu.getMaxCpuTime() && p.getCpuTimeNeeded() > cpu.getMaxCpuTime()) {
+            eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
+            return;
+        }
+        else if (p.getTimeToNextIoOperation() > p.getCpuTimeNeeded() && p.getCpuTimeNeeded() < cpu.getMaxCpuTime()){
+            eventQueue.insertEvent(new Event(END_PROCESS, clock + p.getCpuTimeNeeded()));
+            return;
+        }
+        eventQueue.insertEvent(new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation()));
+    }
 
 	/**
 	 * Reads a number from the an input reader.
