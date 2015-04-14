@@ -20,11 +20,13 @@ public class Process implements Constants
 	private Color color;
 	/** The amount of memory needed by this process */
     private long memoryNeeded;
-	/** The amount of cpu time still needed by this process */
+    /** The amount of cpu time still needed by this process */
     private long cpuTimeNeeded;
 	/** The average time between the need for I/O operations for this process */
     private long avgIoInterval;
-	/** The time left until the next time this process needs I/O */
+
+
+    /** The time left until the next time this process needs I/O */
     private long timeToNextIoOperation = 0;
 
 	/** The time that this process has spent waiting in the memory queue */
@@ -69,6 +71,15 @@ public class Process implements Constants
 		int blue = 64+(int)((processId*53)%128);
 		color = new Color(red, green, blue);
 	}
+
+    public long getTimeToNextIoOperation() {
+        return timeToNextIoOperation;
+    }
+
+    public long getCpuTimeNeeded() {
+        return cpuTimeNeeded;
+    }
+
 
 	/**
 	 * Draws this process as a colored box with a process ID inside.
