@@ -46,6 +46,7 @@ public class CPU {
             currentProcess = null;
         }
         Process p = currentProcess;
+        gui.setCpuActive(null);
         currentProcess = null;
         return p;
     }

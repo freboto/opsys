@@ -24,6 +24,30 @@ public class IO {
         return avgIOTime;
     }
 
-    public 
+    public void insert(Process p) {
+        ioQueue.insert(p);
+    }
+
+    public Process stop() {
+        Process p = curActProcess;
+        curActProcess = null;
+        gui.setIoActive(null);
+        return p;
+    }
+
+    public Process start() {
+        if (ioQueue.isEmpty()) {
+            curActProcess = null;
+            gui.setIoActive(null);
+            return null;
+        }
+        curActProcess = (Process) ioQueue.removeNext();
+        gui.setIoActive(curActProcess);
+        return curActProcess;
+    }
+
+    public boolean isIdle() {
+        return curActProcess == null;
+    }
 
 }
