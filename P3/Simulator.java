@@ -21,6 +21,8 @@ public class Simulator implements Constants
 	private long avgArrivalInterval;
 	// Add member variables as needed
 
+    private CPU cpu;
+
 	/**
 	 * Constructs a scheduling simulator with the given parameters.
 	 * @param memoryQueue			The memory queue to be used.
@@ -41,6 +43,7 @@ public class Simulator implements Constants
 		statistics = new Statistics();
 		eventQueue = new EventQueue();
 		memory = new Memory(memoryQueue, memorySize, statistics);
+        cpu = new CPU(statistics, maxCpuTime);
 		clock = 0;
 		// Add code as needed
     }
@@ -133,9 +136,11 @@ public class Simulator implements Constants
 			// TODO: Add this process to the CPU queue!
 			// Also add new events to the event queue if needed
 
+            cpu.insert(p);
+
 			// Since we haven't implemented the CPU and I/O device yet,
 			// we let the process leave the system immediately, for now.
-			memory.processCompleted(p);
+			//memory.processCompleted(p);
 			// Try to use the freed memory:
 			flushMemoryQueue();
 			// Update statistics
