@@ -22,6 +22,7 @@ public class Simulator implements Constants
 	// Add member variables as needed
 
     private CPU cpu;
+    private IO io;
 
 	/**
 	 * Constructs a scheduling simulator with the given parameters.
@@ -44,6 +45,7 @@ public class Simulator implements Constants
 		eventQueue = new EventQueue();
 		memory = new Memory(memoryQueue, memorySize, statistics);
         cpu = new CPU(cpuQueue, statistics, maxCpuTime, gui);
+        io = new IO(ioQueue, statistics, avgIoTime, gui);
 		clock = 0;
 		// Add code as needed
     }
@@ -144,12 +146,6 @@ public class Simulator implements Constants
 			// we let the process leave the system immediately, for now.
 			//memory.processCompleted(p);
 			// Try to use the freed memory:
-
-
-
-
-
-
 			flushMemoryQueue();
 			// Update statistics
 			p.updateStatistics(statistics);
@@ -165,7 +161,6 @@ public class Simulator implements Constants
 	private void switchProcess() {
 		Process p = cpu.doSwitch(clock);
         generateEvent(p);
-        System.out.println(eventQueue.toString());
     }
 
 	/**20
@@ -182,7 +177,10 @@ public class Simulator implements Constants
 	 * perform an I/O operation.
 	 */
 	private void processIoRequest() {
-
+        io.insert(cpu.handleIO(clock));
+        eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
+        switchProcess();
+        io.start();
 	}
 
 	/**
@@ -190,20 +188,25 @@ public class Simulator implements Constants
 	 * is done with its I/O operation.
 	 */
 	private void endIoOperation() {
-		// Incomplete
+        Process p = io.stop();
+        cpu.insert(p);
+        if(cpu.isIdle()) switchProcess();
+        if(p != null){
+            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
+        }
 	}
 
-    public void generateEvent(Process p) {
-        if (p.getTimeToNextIoOperation() > cpu.getMaxCpuTime() && p.getCpuTimeNeeded() > cpu.getMaxCpuTime()) {
-            eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
-            return;
-        }
-        else if (p.getTimeToNextIoOperation() > p.getCpuTimeNeeded() && p.getCpuTimeNeeded() < cpu.getMaxCpuTime()){
-            eventQueue.insertEvent(new Event(END_PROCESS, clock + p.getCpuTimeNeeded()));
-            return;
-        }
-        eventQueue.insertEvent(new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation()));
-    }
+   public void generateEvent(Process p) {
+       if (p.getTimeToNextIoOperation() > cpu.getMaxCpuTime() && p.getCpuTimeNeeded() > cpu.getMaxCpuTime()) {
+           eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
+           return;
+       } else if (p.getTimeToNextIoOperation() > p.getCpuTimeNeeded() && p.getCpuTimeNeeded() < cpu.getMaxCpuTime()) {
+           eventQueue.insertEvent(new Event(END_PROCESS, clock + p.getCpuTimeNeeded()));
+           return;
+       }
+       eventQueue.insertEvent(new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation()));
+   }
+
 
 	/**
 	 * Reads a number from the an input reader.

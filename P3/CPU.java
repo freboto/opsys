@@ -46,16 +46,15 @@ public class CPU {
             currentProcess = null;
         }
         Process p = currentProcess;
+        gui.setCpuActive(null);
         currentProcess = null;
         return p;
     }
 
-    public void handleIO(long clock) {
-        if (cpuQueue.isEmpty()) {
-            idle = true;
-            currentProcess = null;
-        }
-        currentProcess = popQ(clock);
+    public Process handleIO(long clock) {
+        Process p = currentProcess;
+        currentProcess = null;
+        return p;
     }
 
     public Process popQ(long clock) {
