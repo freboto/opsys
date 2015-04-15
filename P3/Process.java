@@ -170,6 +170,7 @@ public class Process implements Constants
     }
 
     public void endedInIO(long clock){
+
         long deltaTime = clock- timeOfLastEvent;
         timeSpentInIo += deltaTime;
         timeToNextIoOperation -= deltaTime;
@@ -182,5 +183,9 @@ public class Process implements Constants
         timeSpentWaitingForIo += deltaTime;
         nofTimesInIoQueue++;
         timeOfLastEvent = clock;
+    }
+
+    public void updateTimeToNextIoOperation(long clock){
+        timeToNextIoOperation = clock + 1 + (long)(2*Math.random()*avgIoInterval);
     }
 }

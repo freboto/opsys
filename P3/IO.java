@@ -29,6 +29,7 @@ public class IO {
     }
 
     public Process stop() {
+        System.out.println(ioQueue.getQueueLength());
         Process p = curActProcess;
         curActProcess = null;
         gui.setIoActive(null);
@@ -36,6 +37,7 @@ public class IO {
     }
 
     public Process start() {
+        System.out.println(ioQueue.getQueueLength());
         if (ioQueue.isEmpty()) {
             curActProcess = null;
             gui.setIoActive(null);

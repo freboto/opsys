@@ -187,7 +187,7 @@ public class Simulator implements Constants
 	 */
 	private void processIoRequest() {
         Process p = cpu.doEnd(clock);
-        io.insert(cpu.handleIO(clock));
+        io.insert(p);
         p.endedInCPU(clock);
         eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
         switchProcess();
@@ -199,7 +199,10 @@ public class Simulator implements Constants
 	 */
 	private void endIoOperation() {
         Process p = io.stop();
-        p.endedInIO(clock);
+        if (p != null) {
+            p.endedInIO(clock);
+        }
+
         cpu.insert(p);
         //if(cpu.isIdle()) switchProcess();
         p = io.start();
@@ -212,13 +215,18 @@ public class Simulator implements Constants
    public void generateEvent(Process p) {
        if (p.getTimeToNextIoOperation() > cpu.getMaxCpuTime() && p.getCpuTimeNeeded() > cpu.getMaxCpuTime()) {
            eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
+           System.out.println("SWITCH_PROCESS");
            return;
        } else if (p.getTimeToNextIoOperation() > p.getCpuTimeNeeded() && p.getCpuTimeNeeded() < cpu.getMaxCpuTime()) {
            eventQueue.insertEvent(new Event(END_PROCESS, clock + p.getCpuTimeNeeded()));
+           System.out.println("END_PROCESS");
            return;
        }
        Event e = new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation());
+       System.out.printf("IO_PROCESS");
        eventQueue.insertEvent(e);
+       System.out.printf("-----IO_PROCESS2");
+
    }
 
 

@@ -42,18 +42,12 @@ public class CPU {
     }
 
     public Process doEnd(long clock) {
-        if (cpuQueue.isEmpty()) {
+        /**if (cpuQueue.isEmpty()) {
             idle = true;
             currentProcess = null;
-        }
+        }*/
         Process p = currentProcess;
         gui.setCpuActive(null);
-        currentProcess = null;
-        return p;
-    }
-
-    public Process handleIO(long clock) {
-        Process p = currentProcess;
         currentProcess = null;
         return p;
     }
