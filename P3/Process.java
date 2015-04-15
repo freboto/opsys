@@ -48,6 +48,11 @@ public class Process implements Constants
 	/** The global time of the last event involving this process */
 	private long timeOfLastEvent;
 
+    //	number of times that this process has had the cpu
+    private long nofTimesInCPU = 0;
+    //	number of times that this process has had IO time;
+    private long nofTimesInIO = 0;
+
 	/**
 	 * Creates a new process with given parameters. Other parameters are randomly
 	 * determined.
@@ -129,4 +134,53 @@ public class Process implements Constants
 	}
 
 	// Add more methods as needed
+
+
+    public void forceStopedInCPU(long clock){
+        long deltaTime = clock - timeOfLastEvent;
+        timeSpentInCpu += deltaTime;
+        cpuTimeNeeded -= deltaTime;
+        timeToNextIoOperation -= deltaTime;
+        nofTimesInReadyQueue++;
+        timeOfLastEvent = deltaTime;
+    }
+
+    public void startedInCPU(long clock){
+        long deltaTime = clock - timeOfLastEvent;
+        timeSpentInReadyQueue += deltaTime;
+        nofTimesInReadyQueue++;
+        timeOfLastEvent = clock;
+    }
+
+    public long getTimeToNextIOOperation(){
+        if (timeToNextIoOperation <= 0)
+//			return 5000;
+            return timeToNextIoOperation = (long)(Math.random() * avgIoInterval + (long) (Math.floor(avgIoInterval * 3)));
+        return timeToNextIoOperation;
+    }
+
+
+    public void endedInCPU(long clock){
+        long deltaTime = clock - timeOfLastEvent;
+        timeSpentInCpu += deltaTime;
+        cpuTimeNeeded -= deltaTime;
+        timeToNextIoOperation -= deltaTime;
+        nofTimesInCPU++;
+        timeOfLastEvent = clock;
+    }
+
+    public void endedInIO(long clock){
+        long deltaTime = clock- timeOfLastEvent;
+        timeSpentInIo += deltaTime;
+        timeToNextIoOperation -= deltaTime;
+        nofTimesInIO++;
+        timeOfLastEvent = clock;
+    }
+
+    public void startedInIO(long clock){
+        long deltaTime = clock - timeOfLastEvent;
+        timeSpentWaitingForIo += deltaTime;
+        nofTimesInIoQueue++;
+        timeOfLastEvent = clock;
+    }
 }

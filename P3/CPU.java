@@ -30,14 +30,15 @@ public class CPU {
         cpuQueue.insert(p);
     }
 
-    public Process doSwitch(long clock) {
-        if (currentProcess != null) {
-            insert(currentProcess);
+    public Process doStart(long clock) {
+        if (cpuQueue.isEmpty()) {
+           currentProcess = null;
+            return null;
         }
-
-        currentProcess = popQ(clock);
+        currentProcess = (Process) cpuQueue.removeNext();
         gui.setCpuActive(currentProcess);
         return currentProcess;
+
     }
 
     public Process doEnd(long clock) {

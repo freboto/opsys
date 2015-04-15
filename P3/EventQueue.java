@@ -10,7 +10,7 @@ import java.util.*;
 public class EventQueue
 {
 	/** The list of events */
-	private ArrayList events;
+	public ArrayList events;
 
 	/**
 	 * Creates a new Event Queue.
