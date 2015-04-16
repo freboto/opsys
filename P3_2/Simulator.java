@@ -173,6 +173,7 @@ public class Simulator implements Constants
 	 */
 	private void endProcess() {
 		// Incomplete
+        memory.processCompleted(cpu.doEnd(clock));
 	}
 
 	/**
@@ -182,6 +183,9 @@ public class Simulator implements Constants
 	private void processIoRequest() {
 		// Incomplete
         Process p = cpu.doEnd(clock);
+        if(!io.isIoQueueEmpty()){
+            io.start();
+        }
         io.insert(p);
 	}
 
@@ -191,6 +195,10 @@ public class Simulator implements Constants
 	 */
 	private void endIoOperation() {
 		// Incomplete
+        cpu.insert(io.stop());
+        if(io.stop() != null){
+            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
+        }
 	}
 
 	/**
