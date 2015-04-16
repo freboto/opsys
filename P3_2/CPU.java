@@ -26,5 +26,60 @@
  * Created by Fredrik on 15/04/15.
  */
 public class CPU {
+    private Queue cpuQueue;
+    private Statistics statistics;
+    private long maxCpuTime;
+    private Process currentProcess = null;
+    public boolean idle = true;
+    private Gui gui;
+
+
+    public CPU(Queue cpuQueue, Statistics stats, long maxCpuTime, Gui gui) {
+        this.cpuQueue = cpuQueue;
+        this.statistics = stats;
+        this.maxCpuTime = maxCpuTime;
+        this.gui = gui;
+
+    }
+
+    public Process getCurrentProcess() {
+        return currentProcess;
+    }
+
+    public long getMaxCpuTime() {
+        return maxCpuTime;
+    }
+
+    public void insert(Process p) {
+        cpuQueue.insert(p);
+    }
+
+    public Process doStart(long clock) {
+
+        if (cpuQueue.isEmpty()) {
+            currentProcess = null;
+            idle = true;
+            return null;
+        }
+
+        currentProcess = (Process) cpuQueue.removeNext();
+        gui.setCpuActive(currentProcess);
+        idle = false;
+        return currentProcess;
+
+    }
+
+    public Process doEnd(long clock) {
+        Process p = currentProcess;
+        gui.setCpuActive(null);
+        currentProcess = null;
+        idle = true;
+        return p;
+    }
+
+
+
+
+
 
 }
