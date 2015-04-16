@@ -125,7 +125,8 @@ public class Process implements Constants
     }
 
     public long getTimeToNextIoOperation() {
-        timeToNextIoOperation = (long) (2 * Math.random() * avgIoInterval);
+        timeToNextIoOperation =  (long) (1 + (2 * Math.random() * avgIoInterval));
+
         return timeToNextIoOperation;
     }
 
@@ -135,11 +136,11 @@ public class Process implements Constants
 
     public void updateCpuTime(long clock) {
         long delta = clock - timeOfLastEvent;
-        System.out.println(timeOfLastEvent);
+
         timeOfLastEvent = delta;
-        System.out.println(cpuTimeNeeded);
+
         cpuTimeNeeded -= delta;
-        System.out.println(cpuTimeNeeded);
+
         if (cpuTimeNeeded < 0) {
             cpuTimeNeeded = 0;
         }
@@ -148,10 +149,11 @@ public class Process implements Constants
 
     public void updateIOTime(long clock) {
         long delta = clock - timeOfLastEvent;
-        System.out.println(timeOfLastEvent);
+
         timeOfLastEvent = delta;
-        System.out.println(timeSpentInCpu);
+
         timeSpentInCpu += delta;
-        System.out.println(timeSpentInCpu);
+
     }
+
 }

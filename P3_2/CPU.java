@@ -64,7 +64,6 @@ public class CPU {
 
         currentProcess = (Process) cpuQueue.removeNext();
         gui.setCpuActive(currentProcess);
-        idle = false;
         return currentProcess;
 
     }
@@ -73,7 +72,6 @@ public class CPU {
         Process p = currentProcess;
         gui.setCpuActive(null);
         currentProcess = null;
-        idle = true;
         return p;
     }
 

@@ -66,13 +66,10 @@ public class Simulator implements Constants
 		while (clock < simulationLength && !eventQueue.isEmpty()) {
 			// Find the next event
 			Event event = eventQueue.getNextEvent();
-            System.out.println("-- [DEBUG][MAIN] Current event type " + event.getType() + " and time: " + event.getTime());
 			// Find out how much time that passed...
 			long timeDifference = event.getTime()-clock;
 			// ...and update the clock.
-            System.out.println("-- [DEBUG][MAIN] Current system clock: " + clock);
 			clock = event.getTime();
-            System.out.println("-- [DEBUG][MAIN] Current system clock: " + clock);
 			// Let the memory unit and the GUI know that time has passed
 			memory.timePassed(timeDifference);
 			gui.timePassed(timeDifference);
@@ -145,10 +142,7 @@ public class Simulator implements Constants
 			// Since we haven't implemented the CPU and I/O device yet,
 			// we let the process leave the system immediately, for now.
             cpu.insert(p);
-            if(cpu.idle){
-                cpu.doStart(clock);
-            }
-            p.updateCpuTime(clock);
+            switchProcess();
 
 			// Try to use the freed memory:
 			flushMemoryQueue();
@@ -165,10 +159,17 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
 		// Incomplete
-        if(cpu.doEnd(clock) != null){
-            cpu.insert(cpu.doEnd(clock));
+        Process p = cpu.doEnd(clock);
+        if(p != null){
+            cpu.insert(p);
+            p.updateCpuTime(clock);
         }
-        generateEvent(cpu.doEnd(clock));
+
+
+        p = cpu.doStart(clock);
+        if(p != null){
+            generateEvent(p);
+        }
 	}
 
 	/**
@@ -176,7 +177,9 @@ public class Simulator implements Constants
 	 */
 	private void endProcess() {
 		// Incomplete
-        memory.processCompleted(cpu.doEnd(clock));
+        Process p = cpu.doEnd(clock);
+        if(p != null){memory.processCompleted(p);}
+        switchProcess();
 	}
 
 	/**
@@ -186,13 +189,10 @@ public class Simulator implements Constants
 	private void processIoRequest() {
 		// Incomplete
         Process p = cpu.doEnd(clock);
-        if(!io.isIoQueueEmpty()){
-            io.start();
-            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
-        }
-        else{io.insert(p);
-            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));}
-
+        io.insert(p);
+        io.start();
+        eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
+        switchProcess();
 	}
 
 	/**
@@ -201,25 +201,30 @@ public class Simulator implements Constants
 	 */
 	private void endIoOperation() {
 		// Incomplete
-        if(io.stop() != null){
-            cpu.insert(io.stop());
+        Process p = io.stop();
+        if(p != null){
+            cpu.insert(p);
+        }
+        p = io.start();
+        if(p  != null){
+            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
         }
 	}
 
     public void generateEvent(Process p) {
         if (p.getTimeToNextIoOperation() > cpu.getMaxCpuTime() && p.getCpuTimeNeeded() > cpu.getMaxCpuTime()) {
             eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
-            System.out.println("SWITCH_PROCESS");
+            System.out.println("SWITCH_PROCESS\n");
             return;
         } else if (p.getTimeToNextIoOperation() > p.getCpuTimeNeeded() && p.getCpuTimeNeeded() < cpu.getMaxCpuTime()) {
             eventQueue.insertEvent(new Event(END_PROCESS, clock + p.getCpuTimeNeeded()));
-            System.out.println("END_PROCESS");
+            System.out.println("END_PROCESS\n");
             return;
         }
         Event e = new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation());
         System.out.printf("IO_PROCESS");
         eventQueue.insertEvent(e);
-        System.out.printf("-----IO_PROCESS2");
+        System.out.printf("-----IO_PROCESS2\n");
 
     }
 
@@ -275,10 +280,10 @@ public class Simulator implements Constants
 //		long avgArrivalInterval = readLong(reader);
 
         long memorySize = 2048;
-        long maxCpuTime = 345;
-        long avgIoTime = 456;
+        long maxCpuTime = 500;
+        long avgIoTime = 225;
         long simulationLength = 30000;
-        long avgArrivalInterval = 45;
+        long avgArrivalInterval = 1000;
 
 		SimulationGui gui = new SimulationGui(memorySize, maxCpuTime, avgIoTime, simulationLength, avgArrivalInterval);
 	}
