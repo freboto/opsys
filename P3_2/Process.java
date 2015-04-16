@@ -146,4 +146,12 @@ public class Process implements Constants
 
     }
 
+    public void updateIOTime(long clock) {
+        long delta = clock - timeOfLastEvent;
+        System.out.println(timeOfLastEvent);
+        timeOfLastEvent = delta;
+        System.out.println(timeSpentInCpu);
+        timeSpentInCpu += delta;
+        System.out.println(timeSpentInCpu);
+    }
 }
