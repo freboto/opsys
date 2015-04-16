@@ -148,12 +148,7 @@ public class Simulator implements Constants
             if(cpu.idle){
                 cpu.doStart(clock);
             }
-            Event e = new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation());
-            eventQueue.insertEvent(e);
-
-
             p.updateCpuTime(clock);
-
 
 			// Try to use the freed memory:
 			flushMemoryQueue();
@@ -182,6 +177,26 @@ public class Simulator implements Constants
 		// Incomplete
         memory.processCompleted(cpu.doEnd(clock));
 	}
+
+
+    public void generateEvent(Process p) {
+        if (p.getTimeToNextIoOperation() > cpu.getMaxCpuTime() && p.getCpuTimeNeeded() > cpu.getMaxCpuTime()) {
+            eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
+            System.out.println("SWITCH_PROCESS");
+            return;
+        } else if (p.getTimeToNextIoOperation() > p.getCpuTimeNeeded() && p.getCpuTimeNeeded() < cpu.getMaxCpuTime()) {
+            eventQueue.insertEvent(new Event(END_PROCESS, clock + p.getCpuTimeNeeded()));
+            System.out.println("END_PROCESS");
+            return;
+        }
+        Event e = new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation());
+        System.out.printf("IO_PROCESS");
+        eventQueue.insertEvent(e);
+        System.out.printf("-----IO_PROCESS2");
+
+    }
+
+
 
 	/**
 	 * Processes an event signifying that the active process needs to
