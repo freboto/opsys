@@ -145,6 +145,9 @@ public class Simulator implements Constants
             if(cpu.idle){
                 cpu.doStart(clock);
             }
+            Event e = new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation());
+            eventQueue.insertEvent(e);
+
 
 
 			// Try to use the freed memory:
@@ -162,6 +165,9 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
 		// Incomplete
+        if(cpu.doEnd(clock) != null){
+            cpu.insert(cpu.doEnd(clock));
+        }
 	}
 
 	/**
@@ -181,8 +187,11 @@ public class Simulator implements Constants
         Process p = cpu.doEnd(clock);
         if(!io.isIoQueueEmpty()){
             io.start();
+            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
         }
-        io.insert(p);
+        else{io.insert(p);
+            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));}
+
 	}
 
 	/**
@@ -191,11 +200,13 @@ public class Simulator implements Constants
 	 */
 	private void endIoOperation() {
 		// Incomplete
-        cpu.insert(io.stop());
         if(io.stop() != null){
-            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIOTime()));
+            cpu.insert(io.stop());
         }
 	}
+
+
+
 
 	/**
 	 * Reads a number from the an input reader.
