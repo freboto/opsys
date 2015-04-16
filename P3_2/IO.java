@@ -41,6 +41,8 @@ public class IO {
         this.gui = gui;
     }
 
+
+
     public long getAvgIOTime() {
         return avgIOTime;
     }
@@ -48,4 +50,31 @@ public class IO {
     public void insert(Process p) {
         ioQueue.insert(p);
     }
+
+    public Process start() {
+
+        if (ioQueue.isEmpty()) {
+            curActProcess = null;
+            gui.setIoActive(null);
+            return null;
+        }
+        curActProcess = (Process) ioQueue.removeNext();
+        gui.setIoActive(curActProcess);
+        return curActProcess;
+    }
+
+    public boolean isIoQueueEmpty(){
+        if(ioQueue.isEmpty()){
+            return true;
+        }
+        else return false;
+    }
+
+    public Process stop() {
+        Process p = curActProcess;
+        curActProcess = null;
+        gui.setIoActive(null);
+        return p;
+    }
+
 }
