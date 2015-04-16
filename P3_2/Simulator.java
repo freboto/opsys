@@ -66,10 +66,13 @@ public class Simulator implements Constants
 		while (clock < simulationLength && !eventQueue.isEmpty()) {
 			// Find the next event
 			Event event = eventQueue.getNextEvent();
+            System.out.println("-- [DEBUG][MAIN] Current event type " + event.getType() + " and time: " + event.getTime());
 			// Find out how much time that passed...
 			long timeDifference = event.getTime()-clock;
 			// ...and update the clock.
+            System.out.println("-- [DEBUG][MAIN] Current system clock: " + clock);
 			clock = event.getTime();
+            System.out.println("-- [DEBUG][MAIN] Current system clock: " + clock);
 			// Let the memory unit and the GUI know that time has passed
 			memory.timePassed(timeDifference);
 			gui.timePassed(timeDifference);
@@ -148,6 +151,8 @@ public class Simulator implements Constants
             Event e = new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation());
             eventQueue.insertEvent(e);
 
+
+            p.updateCpuTime(clock);
 
 
 			// Try to use the freed memory:

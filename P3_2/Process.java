@@ -118,4 +118,32 @@ public class Process implements Constants
 	}
 
 	// Add more methods as needed
+
+
+    public long getCpuTimeNeeded() {
+        return cpuTimeNeeded;
+    }
+
+    public long getTimeToNextIoOperation() {
+        timeToNextIoOperation = (long) (2 * Math.random() * avgIoInterval);
+        return timeToNextIoOperation;
+    }
+
+    public long getProcessId() {
+        return processId;
+    }
+
+    public void updateCpuTime(long clock) {
+        long delta = clock - timeOfLastEvent;
+        System.out.println(timeOfLastEvent);
+        timeOfLastEvent = delta;
+        System.out.println(cpuTimeNeeded);
+        cpuTimeNeeded -= delta;
+        System.out.println(cpuTimeNeeded);
+        if (cpuTimeNeeded < 0) {
+            cpuTimeNeeded = 0;
+        }
+
+    }
+
 }
